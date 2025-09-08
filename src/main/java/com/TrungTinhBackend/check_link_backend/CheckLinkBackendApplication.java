@@ -15,7 +15,12 @@ public class CheckLinkBackendApplication {
 		Dotenv dotenv = Dotenv.load();
 
 		// Đọc các biến từ file .env và thiết lập chúng vào hệ thống
+		System.setProperty("DATABASE_URL", dotenv.get("DATABASE_URL"));
+		System.setProperty("DATABASE_USERNAME", dotenv.get("DATABASE_USERNAME"));
+		System.setProperty("DATABASE_PASSWORD", dotenv.get("DATABASE_PASSWORD"));
 		System.setProperty("google.api.key", dotenv.get("google.api.key"));
+		System.setProperty("virustotal.api.key", dotenv.get("virustotal.api.key"));
+		System.setProperty("phishtank.api.url", dotenv.get("phishtank.api.url"));
 
 //		System.setProperty("DATABASE_URL", System.getenv("DATABASE_URL"));
 		SpringApplication.run(CheckLinkBackendApplication.class, args);
