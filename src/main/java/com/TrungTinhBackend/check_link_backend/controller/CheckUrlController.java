@@ -1,6 +1,6 @@
 package com.TrungTinhBackend.check_link_backend.controller;
 
-import com.TrungTinhBackend.check_link_backend.dto.ApiResponse;
+import com.TrungTinhBackend.check_link_backend.dto.APIResponse;
 import com.TrungTinhBackend.check_link_backend.service.googlesafebrowsing.GoogleSafeBrowsingService;
 import com.TrungTinhBackend.check_link_backend.service.phishtank.PhishTankService;
 import com.TrungTinhBackend.check_link_backend.service.virustotal.VirusTotalService;
@@ -26,12 +26,12 @@ public class CheckUrlController {
     private PhishTankService phishTankService;
 
     @GetMapping
-    public ApiResponse checkAll(@RequestParam String url) throws JsonProcessingException {
+    public APIResponse checkAll(@RequestParam String url) throws JsonProcessingException {
         String googleResult = googleSafeBrowsingService.checkUrl(url);
         Map<String, Object> vtResult = virusTotalService.checkUrl(url);
 //        String ptResult = phishTankService.checkUrl(url);
 
-        ApiResponse apiResponse = new ApiResponse();
+        APIResponse apiResponse = new APIResponse();
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Check success");
         apiResponse.setGoogleSafeBrowsing(googleResult);

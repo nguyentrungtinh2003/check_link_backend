@@ -6,24 +6,28 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
-public class ApiResponse {
+public class APIResponse {
 
     private Long statusCode;
     private String message;
     private String googleSafeBrowsing;
     private Map<String,Object> virusTotal;
     private String fishTank;
+    private String token;
+    private Object data;
     private LocalDateTime timestamp;
 
-    public ApiResponse() {
+    public APIResponse() {
     }
 
-    public ApiResponse(Long statusCode, String message, String googleSafeBrowsing, Map<String,Object> virusTotal, String fishTank,LocalDateTime timestamp) {
+    public APIResponse(Long statusCode, String message, String googleSafeBrowsing, Map<String, Object> virusTotal, String fishTank, String token, Object data, LocalDateTime timestamp) {
         this.statusCode = statusCode;
         this.message = message;
         this.googleSafeBrowsing = googleSafeBrowsing;
         this.virusTotal = virusTotal;
         this.fishTank = fishTank;
+        this.token = token;
+        this.data = data;
         this.timestamp = timestamp;
     }
 
@@ -51,11 +55,11 @@ public class ApiResponse {
         this.googleSafeBrowsing = googleSafeBrowsing;
     }
 
-    public Map<String,Object> getVirusTotal() {
+    public Map<String, Object> getVirusTotal() {
         return virusTotal;
     }
 
-    public void setVirusTotal(Map<String,Object> virusTotal) {
+    public void setVirusTotal(Map<String, Object> virusTotal) {
         this.virusTotal = virusTotal;
     }
 
@@ -65,6 +69,22 @@ public class ApiResponse {
 
     public void setFishTank(String fishTank) {
         this.fishTank = fishTank;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 
     public LocalDateTime getTimestamp() {

@@ -15,6 +15,7 @@ public class CheckLinkBackendApplication {
 		Dotenv dotenv = Dotenv.load();
 
 		// Đọc các biến từ file .env và thiết lập chúng vào hệ thống
+		System.setProperty("SECRET_STRING", dotenv.get("SECRET_STRING"));
 		System.setProperty("DATABASE_URL", dotenv.get("DATABASE_URL"));
 		System.setProperty("DATABASE_USERNAME", dotenv.get("DATABASE_USERNAME"));
 		System.setProperty("DATABASE_PASSWORD", dotenv.get("DATABASE_PASSWORD"));
