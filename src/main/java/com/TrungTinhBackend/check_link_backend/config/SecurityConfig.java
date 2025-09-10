@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**","/api/check/**","/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/oauth2/**",             // 👈 Cho phép truy cập OAuth2 endpoint
                                 "/login/oauth2/**", "/robots.txt", "/api/ws/**",  "/api/user-google" ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/employee/**").hasAnyRole("EMPLOYEE","ADMIN")
+                        .requestMatchers("/api/history/user/**").hasAnyRole("USER","ADMIN")
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(exception -> exception

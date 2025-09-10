@@ -27,7 +27,7 @@ public class JwtUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     private final SecretKey key;
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 15*60*1000;
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60*60*1000*24;
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 7*24*60*60*1000;
 
     public JwtUtils( @Value("${secret_string}")

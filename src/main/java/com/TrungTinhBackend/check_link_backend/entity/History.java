@@ -1,8 +1,10 @@
 package com.TrungTinhBackend.check_link_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 public class History {
@@ -13,12 +15,16 @@ public class History {
 
     private String urlCheck;
     private String ipAddress;
+    @Column(columnDefinition = "TEXT")
     private String userAgent;
+    @Column(columnDefinition = "TEXT")
     private String googleSafeBrowsing;
+    @Column(columnDefinition = "TEXT") // hoặc JSON nếu DB hỗ trợ
     private String virusTotal;
 
     @ManyToOne()
     @JoinColumn(name = "user_id")
+    @JsonIgnore()
     private User user;
 
     private LocalDateTime createdAt;

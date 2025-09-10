@@ -47,7 +47,8 @@ public class UserServiceImpl implements UserService{
         User user1 = new User();
         user1.setUsername(registerDTO.getUsername());
         user1.setEmail(registerDTO.getEmail());
-        user1.setPassword(passwordEncoder.encode(registerDTO.getUsername()));
+        user1.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user1.setRawPassword(registerDTO.getPassword());
         user1.setRole(Role.USER);
         user1.setCreatedAt(LocalDateTime.now());
         user1.setUpdatedAt(LocalDateTime.now());
@@ -77,6 +78,7 @@ public class UserServiceImpl implements UserService{
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Login success");
         apiResponse.setToken(token);
+        apiResponse.setData(user);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }

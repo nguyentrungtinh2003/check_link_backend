@@ -6,10 +6,14 @@ import com.TrungTinhBackend.check_link_backend.entity.User;
 import com.TrungTinhBackend.check_link_backend.exception.NotFoundException;
 import com.TrungTinhBackend.check_link_backend.repository.HistoryRepository;
 import com.TrungTinhBackend.check_link_backend.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class HistoryServiceImpl implements HistoryService{
@@ -21,26 +25,46 @@ public class HistoryServiceImpl implements HistoryService{
     private UserRepository userRepository;
 
     @Override
-    public APIResponse addHistory(Long userId, String ipAddress, String userAgent, String urlCheck, String googleSafeBrowsing, String virusTotal) {
+    public APIResponse addHistory(Long userId, String ipAddress, String userAgent, String urlCheck, String googleSafeBrowsing, Map<String,Object> virusTotal) throws JsonProcessingException {
         APIResponse apiResponse = new APIResponse();
-
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User not found")
-        );
 
         History history = new History();
         history.setUrlCheck(urlCheck);
         history.setIpAddress(ipAddress);
         history.setUserAgent(userAgent);
         history.setGoogleSafeBrowsing(googleSafeBrowsing);
-        history.setVirusTotal(virusTotal);
-        history.setUser(user);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String vtJson = mapper.writeValueAsString(virusTotal);
+        history.setVirusTotal(vtJson);
+
+        if(userId != null) {
+            User user = userRepository.findById(userId).orElseThrow(
+                    () -> new NotFoundException("User not found")
+            );
+
+            history.setUser(user);
+        }
+        history.setUser(null);
         history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);
 
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Save history success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse getHistoryByUserId(Long userId) {
+        APIResponse apiResponse = new APIResponse();
+
+        List<History> histories = historyRepository.findByUserId(userId);
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Get history success");
+        apiResponse.setData(histories);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }

@@ -20,22 +20,45 @@ public class User implements UserDetails {
     private String username;
     private String email;
     private String password;
+    private String rawPassword;
     private Role role;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "user")
+    private List<History> histories;
+
+
     public User() {
     }
 
-    public User(Long id, String username, String email, String password, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(Long id, String username, String email, String password, String rawPassword, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, List<History> histories) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.rawPassword = rawPassword;
         this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.histories = histories;
+    }
+
+    public List<History> getHistories() {
+        return histories;
+    }
+
+    public void setHistories(List<History> histories) {
+        this.histories = histories;
+    }
+
+    public String getRawPassword() {
+        return rawPassword;
+    }
+
+    public void setRawPassword(String rawPassword) {
+        this.rawPassword = rawPassword;
     }
 
     public Long getId() {
