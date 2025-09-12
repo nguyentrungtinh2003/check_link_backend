@@ -45,7 +45,7 @@ public class HistoryServiceImpl implements HistoryService{
 
             history.setUser(user);
         }
-        history.setUser(null);
+
         history.setCreatedAt(LocalDateTime.now());
 
         historyRepository.save(history);

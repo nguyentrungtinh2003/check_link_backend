@@ -1,6 +1,7 @@
 package com.TrungTinhBackend.check_link_backend.config;
 
 import com.TrungTinhBackend.check_link_backend.service.jwt.JwtAuthFilter;
+import com.TrungTinhBackend.check_link_backend.service.jwt.RateLimitFilter;
 import com.TrungTinhBackend.check_link_backend.service.jwt.UserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class SecurityConfig {
     private UserDetailsService userDetailsService;
 
     @Autowired
+    private RateLimitFilter rateLimitFilter;
+
+    @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
     @Bean
@@ -39,10 +43,11 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**","/api/check/**","/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/oauth2/**",             // 👈 Cho phép truy cập OAuth2 endpoint
+                        .requestMatchers("/api/auth/**","/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/oauth2/**",             // 👈 Cho phép truy cập OAuth2 endpoint
                                 "/login/oauth2/**", "/robots.txt", "/api/ws/**",  "/api/user-google" ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/history/user/**").hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/api/check/**").hasAnyRole("USER","ADMIN")
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(exception -> exception
@@ -51,8 +56,11 @@ public class SecurityConfig {
                             response.setContentType("application/json");
                             response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"You are not authorized to access this resource\"}");
                         })
-                )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                );
+
+                httpSecurity.addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
+                httpSecurity.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return httpSecurity.build();
     }
 

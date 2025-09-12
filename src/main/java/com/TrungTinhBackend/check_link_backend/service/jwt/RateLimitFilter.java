@@ -1,0 +1,70 @@
+package com.TrungTinhBackend.check_link_backend.service.jwt;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Component
+public class RateLimitFilter extends OncePerRequestFilter {
+
+    private final Map<String, RequestInfo> requestCounts = new ConcurrentHashMap<>();
+    private static final int LIMIT = 3; // tối đa 3 request
+    private static final long WINDOW = 60; // 60 giây
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getRequestURI();
+
+        // Bỏ qua cho auth endpoints
+        if (path.startsWith("/api/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Áp dụng rate limit cho các API khác
+        String ip = request.getRemoteAddr();
+        long now = Instant.now().getEpochSecond();
+
+        requestCounts.putIfAbsent(ip, new RequestInfo(0, now));
+        RequestInfo info = requestCounts.get(ip);
+
+        synchronized (info) {
+            if (now - info.timestamp >= WINDOW) {
+                info.count = 0;
+                info.timestamp = now;
+            }
+            info.count++;
+
+            if (info.count > LIMIT) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Too many requests\", \"message\": \"Bạn chỉ được phép tối đa "
+                        + LIMIT + " request / " + WINDOW + " giây\"}");
+                return;
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private static class RequestInfo {
+        int count;
+        long timestamp;
+        RequestInfo(int count, long timestamp) {
+            this.count = count;
+            this.timestamp = timestamp;
+        }
+    }
+}
