@@ -23,6 +23,9 @@ public class User implements UserDetails {
     private String rawPassword;
     private Role role;
 
+    private String otp;
+    private LocalDateTime otpExpiry;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -33,16 +36,34 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(Long id, String username, String email, String password, String rawPassword, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, List<History> histories) {
+    public User(Long id, String username, String email, String password, String rawPassword, Role role, String otp, LocalDateTime otpExpiry, LocalDateTime createdAt, LocalDateTime updatedAt, List<History> histories) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.rawPassword = rawPassword;
         this.role = role;
+        this.otp = otp;
+        this.otpExpiry = otpExpiry;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.histories = histories;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getOtpExpiry() {
+        return otpExpiry;
+    }
+
+    public void setOtpExpiry(LocalDateTime otpExpiry) {
+        this.otpExpiry = otpExpiry;
     }
 
     public List<History> getHistories() {

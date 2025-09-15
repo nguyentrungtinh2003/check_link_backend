@@ -3,6 +3,7 @@ package com.TrungTinhBackend.check_link_backend.controller;
 import com.TrungTinhBackend.check_link_backend.dto.APIResponse;
 import com.TrungTinhBackend.check_link_backend.dto.LoginDTO;
 import com.TrungTinhBackend.check_link_backend.dto.RegisterDTO;
+import com.TrungTinhBackend.check_link_backend.dto.ResetPass;
 import com.TrungTinhBackend.check_link_backend.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,5 +31,15 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<APIResponse> login(@RequestBody LoginDTO loginDTO, HttpServletResponse response, HttpServletRequest request, Authentication authentication) {
         return ResponseEntity.ok(userService.login(loginDTO,response,request,authentication));
+    }
+
+    @PostMapping("/send-otp")
+    public ResponseEntity<APIResponse> sendOTP(@RequestParam String email) {
+        return ResponseEntity.ok(userService.sendOTP(email));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<APIResponse> resetPassword(@RequestBody ResetPass resetPass) {
+        return ResponseEntity.ok(userService.resetPassword(resetPass));
     }
 }

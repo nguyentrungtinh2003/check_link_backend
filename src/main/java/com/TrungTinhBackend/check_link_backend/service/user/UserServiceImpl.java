@@ -4,9 +4,11 @@ import com.TrungTinhBackend.check_link_backend.Enum.Role;
 import com.TrungTinhBackend.check_link_backend.dto.APIResponse;
 import com.TrungTinhBackend.check_link_backend.dto.LoginDTO;
 import com.TrungTinhBackend.check_link_backend.dto.RegisterDTO;
+import com.TrungTinhBackend.check_link_backend.dto.ResetPass;
 import com.TrungTinhBackend.check_link_backend.entity.User;
 import com.TrungTinhBackend.check_link_backend.exception.NotFoundException;
 import com.TrungTinhBackend.check_link_backend.repository.UserRepository;
+import com.TrungTinhBackend.check_link_backend.service.email.MailService;
 import com.TrungTinhBackend.check_link_backend.service.jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -34,6 +37,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private MailService mailService;
 
     @Override
     public APIResponse register(RegisterDTO registerDTO, HttpServletRequest request) throws IOException {
@@ -79,6 +85,60 @@ public class UserServiceImpl implements UserService{
         apiResponse.setMessage("Login success");
         apiResponse.setToken(token);
         apiResponse.setData(user);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse sendOTP(String email) {
+        APIResponse apiResponse = new APIResponse();
+
+        User user = userRepository.findByEmail(email);
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        String otp = String.format("%06d", new Random().nextInt(900000) + 100000);
+        user.setOtp(otp);
+        user.setOtpExpiry(LocalDateTime.now().plusMinutes(3));
+        userRepository.save(user);
+
+        mailService.sendEmail(email,"Mã OTP của URL Checker","OTP : "+otp);
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Send OTP success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse resetPassword(ResetPass resetPass) {
+        APIResponse apiResponse = new APIResponse();
+
+        User user = userRepository.findByEmail(resetPass.getEmail());
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        if(user.getOtp() == null || !user.getOtp().equals(resetPass.getOtp())) {
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        if(user.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            user.setOtp(null);
+            user.setOtpExpiry(null);
+            userRepository.save(user);
+        }
+
+        user.setOtp(null);
+        user.setOtpExpiry(null);
+        user.setPassword(passwordEncoder.encode(resetPass.getNewPassword()));
+        user.setRawPassword(resetPass.getNewPassword());
+
+        userRepository.save(user);
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Reset pass success");
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
