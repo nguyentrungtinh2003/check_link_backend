@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/history/user/**").hasAnyRole("USER","ADMIN")
                         .requestMatchers("/api/check/**").hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/api/user/**").hasAnyRole("USER","ADMIN")
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(exception -> exception

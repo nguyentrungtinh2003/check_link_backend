@@ -16,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -85,6 +87,42 @@ public class UserServiceImpl implements UserService{
         apiResponse.setMessage("Login success");
         apiResponse.setToken(token);
         apiResponse.setData(user);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse updateUser(Long id, User user, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        User user1 = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("User not found")
+        );
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByUsername(userDetails.getUsername());
+
+        if(authUser == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        if(!id.equals(authUser.getId())) {
+            throw new AccessDeniedException("Bạn không có quyền chỉnh sửa");
+        }
+
+        if(user.getUsername() != null && !user.getUsername().isEmpty()) {
+            user1.setUsername(user.getUsername());
+        }
+
+        if(user.getEmail() != null && !user.getEmail().isEmpty()) {
+            user1.setEmail(user.getEmail());
+        }
+
+        user1.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user1);
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Update user success");
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
