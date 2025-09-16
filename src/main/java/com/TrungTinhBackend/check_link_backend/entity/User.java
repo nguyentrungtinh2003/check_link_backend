@@ -33,11 +33,12 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<History> histories;
 
+    private boolean active;
 
     public User() {
     }
 
-    public User(Long id, String username, String email, String password, String rawPassword, Role role, String otp, LocalDateTime otpExpiry, LocalDateTime createdAt, LocalDateTime updatedAt, List<History> histories) {
+    public User(Long id, String username, String email, String password, String rawPassword, Role role, String otp, LocalDateTime otpExpiry, LocalDateTime createdAt, LocalDateTime updatedAt, List<History> histories, boolean active) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -49,6 +50,15 @@ public class User implements UserDetails {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.histories = histories;
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getOtp() {
@@ -112,7 +122,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return active;
     }
 
     public void setUsername(String username) {

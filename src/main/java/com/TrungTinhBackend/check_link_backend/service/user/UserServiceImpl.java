@@ -1,10 +1,7 @@
 package com.TrungTinhBackend.check_link_backend.service.user;
 
 import com.TrungTinhBackend.check_link_backend.Enum.Role;
-import com.TrungTinhBackend.check_link_backend.dto.APIResponse;
-import com.TrungTinhBackend.check_link_backend.dto.LoginDTO;
-import com.TrungTinhBackend.check_link_backend.dto.RegisterDTO;
-import com.TrungTinhBackend.check_link_backend.dto.ResetPass;
+import com.TrungTinhBackend.check_link_backend.dto.*;
 import com.TrungTinhBackend.check_link_backend.entity.User;
 import com.TrungTinhBackend.check_link_backend.exception.NotFoundException;
 import com.TrungTinhBackend.check_link_backend.repository.UserRepository;
@@ -60,8 +57,11 @@ public class UserServiceImpl implements UserService{
         user1.setRole(Role.USER);
         user1.setCreatedAt(LocalDateTime.now());
         user1.setUpdatedAt(LocalDateTime.now());
+        user1.setActive(false);
 
         userRepository.save(user1);
+
+        sendOTP(user1.getEmail());
 
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Register success");
@@ -166,6 +166,7 @@ public class UserServiceImpl implements UserService{
             user.setOtp(null);
             user.setOtpExpiry(null);
             userRepository.save(user);
+            throw new RuntimeException("OTP expired");
         }
 
         user.setOtp(null);
@@ -177,6 +178,38 @@ public class UserServiceImpl implements UserService{
 
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Reset pass success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse verifyAcc(VerifyAcc verifyAcc) {
+        APIResponse apiResponse = new APIResponse();
+
+        User user = userRepository.findByEmail(verifyAcc.getEmail());
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        if(user.getOtp() == null || !user.getOtp().equals(verifyAcc.getOtp())) {
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        if(user.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            user.setOtp(null);
+            user.setOtpExpiry(null);
+            userRepository.save(user);
+            throw new RuntimeException("OTP expired");
+        }
+
+        user.setOtp(null);
+        user.setOtpExpiry(null);
+        user.setActive(true);
+
+        userRepository.save(user);
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Verify account success");
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }

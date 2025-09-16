@@ -1,9 +1,6 @@
 package com.TrungTinhBackend.check_link_backend.service.user;
 
-import com.TrungTinhBackend.check_link_backend.dto.APIResponse;
-import com.TrungTinhBackend.check_link_backend.dto.LoginDTO;
-import com.TrungTinhBackend.check_link_backend.dto.RegisterDTO;
-import com.TrungTinhBackend.check_link_backend.dto.ResetPass;
+import com.TrungTinhBackend.check_link_backend.dto.*;
 import com.TrungTinhBackend.check_link_backend.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,4 +15,5 @@ public interface UserService {
     APIResponse updateUser(Long id, User user, Authentication authentication) throws AccessDeniedException;
     APIResponse sendOTP(String email);
     APIResponse resetPassword(ResetPass resetPass);
+    APIResponse verifyAcc(VerifyAcc verifyAcc);
 }

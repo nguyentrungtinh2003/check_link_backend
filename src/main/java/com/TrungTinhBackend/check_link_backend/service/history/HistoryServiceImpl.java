@@ -9,8 +9,11 @@ import com.TrungTinhBackend.check_link_backend.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +68,31 @@ public class HistoryServiceImpl implements HistoryService{
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Get history success");
         apiResponse.setData(histories);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse deleteHistory(Long id, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByUsername(userDetails.getUsername());
+
+        List<History> histories = historyRepository.findByUserId(authUser.getId());
+
+        History history = historyRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("History not found")
+        );
+
+        if(!histories.contains(history)) {
+            throw new AccessDeniedException("Bạn không có quyền xoá");
+        }
+
+        historyRepository.delete(history);
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Delete history success");
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
