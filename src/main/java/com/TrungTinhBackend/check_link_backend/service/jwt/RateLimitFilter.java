@@ -1,5 +1,6 @@
 package com.TrungTinhBackend.check_link_backend.service.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final Map<String, RequestInfo> requestCounts = new ConcurrentHashMap<>();
-    private static final int LIMIT = 5; // tối đa 3 request
+    private static final int LIMIT = 10; // tối đa 3 request
     private static final long WINDOW = 60; // 60 giây
 
     @Override
@@ -47,9 +49,18 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
             if (info.count > LIMIT) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Too many requests\", \"message\": \"Bạn chỉ được phép tối đa "
-                        + LIMIT + " request / " + WINDOW + " giây\"}");
+
+                // quan trọng: set charset trước khi getWriter()
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("application/json; charset=UTF-8");
+
+                Map<String, String> body = new HashMap<>();
+                body.put("error", "Too many requests");
+                body.put("message", "Bạn chỉ được phép gửi tối đa " + LIMIT + " request / " + WINDOW + " giây");
+
+                // dùng Jackson để serialize (tránh lỗi quote/escape)
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(response.getWriter(), body);
                 return;
             }
         }

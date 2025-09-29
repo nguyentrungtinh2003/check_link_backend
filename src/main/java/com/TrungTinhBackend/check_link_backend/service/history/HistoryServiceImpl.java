@@ -9,6 +9,10 @@ import com.TrungTinhBackend.check_link_backend.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -43,7 +47,7 @@ public class HistoryServiceImpl implements HistoryService{
 
         if(userId != null) {
             User user = userRepository.findById(userId).orElseThrow(
-                    () -> new NotFoundException("User not found")
+                    () -> new NotFoundException("Không tìm thấy người dùng")
             );
 
             history.setUser(user);
@@ -60,14 +64,28 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public APIResponse getHistoryByUserId(Long userId) {
+    public APIResponse getHistoryByUserId(Long userId,String keyword, int page, int size, Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
-        List<History> histories = historyRepository.findByUserId(userId);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByUsername(userDetails.getUsername());
+
+        if(!authUser.getId().equals(userId)) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập");
+        }
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Page<History> historyPage;
+
+        if(keyword == null) {
+            historyPage = historyRepository.findAll(pageable);
+        }else {
+            historyPage = historyRepository.findByUserIdAndUrlCheckContainingIgnoreCase(userId,keyword,pageable);
+        }
 
         apiResponse.setStatusCode(200L);
-        apiResponse.setMessage("Get history success");
-        apiResponse.setData(histories);
+        apiResponse.setMessage("Get history by page = "+page+" size = "+size+" success");
+        apiResponse.setData(historyPage);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
@@ -82,7 +100,7 @@ public class HistoryServiceImpl implements HistoryService{
         List<History> histories = historyRepository.findByUserId(authUser.getId());
 
         History history = historyRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("History not found")
+                () -> new NotFoundException("Không tìm thấy lịch sử")
         );
 
         if(!histories.contains(history)) {

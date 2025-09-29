@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByUsername(loginRequestDTO.getUsername());
         if(user == null) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Không tìm thấy người dùng");
         }
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(),
@@ -96,14 +96,14 @@ public class UserServiceImpl implements UserService{
         APIResponse apiResponse = new APIResponse();
 
         User user1 = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("User not found")
+                () -> new NotFoundException("Khoông tìm thấy người dùng")
         );
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User authUser = userRepository.findByUsername(userDetails.getUsername());
 
         if(authUser == null) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Không tìm thấy người dùng");
         }
 
         if(!id.equals(authUser.getId())) {
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByEmail(email);
         if(user == null) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Không tìm thấy người dùng");
         }
 
         String otp = String.format("%06d", new Random().nextInt(900000) + 100000);
@@ -155,18 +155,18 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByEmail(resetPass.getEmail());
         if(user == null) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Không tìm thấy người dùng");
         }
 
         if(user.getOtp() == null || !user.getOtp().equals(resetPass.getOtp())) {
-            throw new RuntimeException("Invalid OTP");
+            throw new RuntimeException("Mã OTP không hợp lệ");
         }
 
         if(user.getOtpExpiry().isBefore(LocalDateTime.now())) {
             user.setOtp(null);
             user.setOtpExpiry(null);
             userRepository.save(user);
-            throw new RuntimeException("OTP expired");
+            throw new RuntimeException("Mã OTP đã hết hạn");
         }
 
         user.setOtp(null);
@@ -188,18 +188,18 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByEmail(verifyAcc.getEmail());
         if(user == null) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Không tìm thấy người dùng");
         }
 
         if(user.getOtp() == null || !user.getOtp().equals(verifyAcc.getOtp())) {
-            throw new RuntimeException("Invalid OTP");
+            throw new RuntimeException("Mã OTP không hợp lệ");
         }
 
         if(user.getOtpExpiry().isBefore(LocalDateTime.now())) {
             user.setOtp(null);
             user.setOtpExpiry(null);
             userRepository.save(user);
-            throw new RuntimeException("OTP expired");
+            throw new RuntimeException("Mã OTP đã hết hạn");
         }
 
         user.setOtp(null);

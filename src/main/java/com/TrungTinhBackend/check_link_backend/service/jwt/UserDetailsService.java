@@ -24,7 +24,7 @@ public class UserDetailsService implements org.springframework.security.core.use
         User user = userRepository.findByUsername(username);
 
         if(user == null) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Không tìm thấy người dùng");
         }
 
         return user;
