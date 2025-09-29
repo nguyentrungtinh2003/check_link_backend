@@ -53,4 +53,19 @@ public class UserController {
                                                   Authentication authentication) throws AccessDeniedException {
         return ResponseEntity.ok(userService.updateUser(id,user,authentication));
     }
+
+    @DeleteMapping("/user/delete/{id}")
+    public ResponseEntity<APIResponse> deleteUser(@PathVariable Long id,
+                                                  Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.toggleDelete(id,authentication));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<APIResponse> getHistoryByUserId(
+                                                          @RequestParam(required = false) String keyword,
+                                                          @RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "6") int size,
+                                                          Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.getUserByPage(keyword,page,size,authentication));
+    }
 }

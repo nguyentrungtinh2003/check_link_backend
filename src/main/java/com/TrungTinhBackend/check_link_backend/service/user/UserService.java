@@ -16,4 +16,6 @@ public interface UserService {
     APIResponse sendOTP(String email);
     APIResponse resetPassword(ResetPass resetPass);
     APIResponse verifyAcc(VerifyAcc verifyAcc);
+    APIResponse toggleDelete(Long id, Authentication authentication) throws AccessDeniedException;
+    APIResponse getUserByPage(String keyword, int page, int size, Authentication authentication);
 }

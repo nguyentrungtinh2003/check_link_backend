@@ -10,6 +10,10 @@ import com.TrungTinhBackend.check_link_backend.service.jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -83,10 +87,17 @@ public class UserServiceImpl implements UserService{
 
         String token = jwtUtils.generateToken(user);
 
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setRole(user.getRole());
+        userDTO.setActive(user.isActive());
+
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Login success");
         apiResponse.setToken(token);
-        apiResponse.setData(user);
+        apiResponse.setData(userDTO);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
@@ -210,6 +221,50 @@ public class UserServiceImpl implements UserService{
 
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Verify account success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse toggleDelete(Long id, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByUsername(userDetails.getUsername());
+
+        if(!authUser.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập");
+        }
+
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Không tìm thấy người dùng")
+        );
+
+        user.setActive(!user.isActive());
+        userRepository.save(user);
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Toggle delete user success");
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse getUserByPage(String keyword, int page, int size, Authentication authentication) {
+        APIResponse apiResponse = new APIResponse();
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Page<User> userPage;
+
+        if(keyword == null) {
+            userPage = userRepository.findAll(pageable);
+        }else {
+            userPage = userRepository.searchByUsernameOrEmail(keyword,pageable);
+        }
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Get user page = "+page+" size = "+size+" success");
+        apiResponse.setData(userPage);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
