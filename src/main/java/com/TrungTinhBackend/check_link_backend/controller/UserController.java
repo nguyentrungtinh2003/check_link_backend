@@ -60,6 +60,12 @@ public class UserController {
         return ResponseEntity.ok(userService.toggleDelete(id,authentication));
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<APIResponse> getUserById(@PathVariable Long id,
+                                                  Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(userService.getUserById(id,authentication));
+    }
+
     @GetMapping("/user")
     public ResponseEntity<APIResponse> getHistoryByUserId(
                                                           @RequestParam(required = false) String keyword,

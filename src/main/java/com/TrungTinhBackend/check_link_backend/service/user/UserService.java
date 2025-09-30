@@ -13,6 +13,7 @@ public interface UserService {
     APIResponse register(RegisterDTO registerDTO, HttpServletRequest request) throws IOException;
     APIResponse login(LoginDTO loginRequestDTO, HttpServletResponse response, HttpServletRequest request, Authentication authentication);
     APIResponse updateUser(Long id, User user, Authentication authentication) throws AccessDeniedException;
+    APIResponse getUserById(Long id,Authentication authentication) throws AccessDeniedException;
     APIResponse sendOTP(String email);
     APIResponse resetPassword(ResetPass resetPass);
     APIResponse verifyAcc(VerifyAcc verifyAcc);

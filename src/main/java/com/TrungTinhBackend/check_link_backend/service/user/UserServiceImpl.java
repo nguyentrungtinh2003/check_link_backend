@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService{
         userDTO.setUsername(user.getUsername());
         userDTO.setEmail(user.getEmail());
         userDTO.setRole(user.getRole());
+        userDTO.setCreatedAt(user.getCreatedAt());
         userDTO.setActive(user.isActive());
 
         apiResponse.setStatusCode(200L);
@@ -117,7 +118,7 @@ public class UserServiceImpl implements UserService{
             throw new NotFoundException("Không tìm thấy người dùng");
         }
 
-        if(!id.equals(authUser.getId())) {
+        if(!id.equals(authUser.getId()) && !authUser.getRole().equals(Role.ADMIN)) {
             throw new AccessDeniedException("Bạn không có quyền chỉnh sửa");
         }
 
@@ -132,8 +133,39 @@ public class UserServiceImpl implements UserService{
         user1.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user1);
 
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user1.getId());
+        userDTO.setUsername(user1.getUsername());
+        userDTO.setEmail(user1.getEmail());
+        userDTO.setRole(user1.getRole());
+        userDTO.setCreatedAt(user1.getCreatedAt());
+        userDTO.setActive(user1.isActive());
+
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Update user success");
+        apiResponse.setData(userDTO);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse getUserById(Long id, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByUsername(userDetails.getUsername());
+
+if(!authUser.getId().equals(id) && !authUser.getRole().equals(Role.ADMIN)) {
+    throw new AccessDeniedException("Bạn không có quyền truy cập");
+}
+
+        User user1 = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Khoông tìm thấy người dùng")
+        );
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Get user by id success");
+        apiResponse.setData(user1);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }
