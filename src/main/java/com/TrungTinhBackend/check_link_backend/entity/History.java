@@ -24,7 +24,6 @@ public class History {
 
     @ManyToOne()
     @JoinColumn(name = "user_id",nullable = true)
-    @JsonIgnore()
     private User user;
 
     private LocalDateTime createdAt;

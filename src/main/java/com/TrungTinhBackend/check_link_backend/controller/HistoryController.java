@@ -25,6 +25,15 @@ public class HistoryController {
         return ResponseEntity.ok(historyService.getHistoryByUserId(userId,keyword,page,size,authentication));
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<APIResponse> getHistoryByPage(
+                                                          @RequestParam(required = false) String keyword,
+                                                          @RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "6") int size,
+                                                          Authentication authentication) throws AccessDeniedException {
+        return ResponseEntity.ok(historyService.getHistoryByPage(keyword,page,size,authentication));
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<APIResponse> deleteHistory(@PathVariable Long id,
                                                      Authentication authentication) throws AccessDeniedException {

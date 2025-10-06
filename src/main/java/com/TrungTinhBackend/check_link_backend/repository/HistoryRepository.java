@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 public interface HistoryRepository extends JpaRepository<History,Long> {
     List<History> findByUserId(Long userId);
+    Page<History> findByUrlCheckContainingIgnoreCase( String keyword, Pageable pageable);
     Page<History> findByUserIdAndUrlCheckContainingIgnoreCase(Long userId, String keyword, Pageable pageable);
 }

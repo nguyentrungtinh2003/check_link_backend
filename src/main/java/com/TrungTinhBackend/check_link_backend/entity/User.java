@@ -31,6 +31,7 @@ public class User implements UserDetails {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<History> histories;
 
     private boolean active;

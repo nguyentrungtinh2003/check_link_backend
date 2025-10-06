@@ -1,5 +1,6 @@
 package com.TrungTinhBackend.check_link_backend.service.history;
 
+import com.TrungTinhBackend.check_link_backend.Enum.Role;
 import com.TrungTinhBackend.check_link_backend.dto.APIResponse;
 import com.TrungTinhBackend.check_link_backend.entity.History;
 import com.TrungTinhBackend.check_link_backend.entity.User;
@@ -81,6 +82,33 @@ public class HistoryServiceImpl implements HistoryService{
             historyPage = historyRepository.findAll(pageable);
         }else {
             historyPage = historyRepository.findByUserIdAndUrlCheckContainingIgnoreCase(userId,keyword,pageable);
+        }
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Get history by page = "+page+" size = "+size+" success");
+        apiResponse.setData(historyPage);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse getHistoryByPage(String keyword, int page, int size, Authentication authentication) throws AccessDeniedException {
+        APIResponse apiResponse = new APIResponse();
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User authUser = userRepository.findByUsername(userDetails.getUsername());
+
+        if(!authUser.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập");
+        }
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Page<History> historyPage;
+
+        if(keyword == null) {
+            historyPage = historyRepository.findAll(pageable);
+        }else {
+            historyPage = historyRepository.findByUrlCheckContainingIgnoreCase(keyword,pageable);
         }
 
         apiResponse.setStatusCode(200L);

@@ -15,19 +15,30 @@ public class CheckLinkBackendApplication {
 		Dotenv dotenv = Dotenv.load();
 
 		// Đọc các biến từ file .env và thiết lập chúng vào hệ thống
-		System.setProperty("SECRET_STRING", dotenv.get("SECRET_STRING"));
-		System.setProperty("DATABASE_URL", dotenv.get("DATABASE_URL"));
-		System.setProperty("DATABASE_USERNAME", dotenv.get("DATABASE_USERNAME"));
-		System.setProperty("DATABASE_PASSWORD", dotenv.get("DATABASE_PASSWORD"));
-		System.setProperty("google.api.key", dotenv.get("google.api.key"));
-		System.setProperty("virustotal.api.key", dotenv.get("virustotal.api.key"));
-		System.setProperty("phishtank.api.url", dotenv.get("phishtank.api.url"));
-		System.setProperty("MAIL_HOST", dotenv.get("MAIL_HOST"));
-		System.setProperty("MAIL_PORT", dotenv.get("MAIL_PORT"));
-		System.setProperty("MAIL_USERNAME", dotenv.get("MAIL_USERNAME"));
-		System.setProperty("MAIL_PASSWORD", dotenv.get("MAIL_PASSWORD"));
+//		System.setProperty("SECRET_STRING", dotenv.get("SECRET_STRING"));
+//		System.setProperty("DATABASE_URL", dotenv.get("DATABASE_URL"));
+//		System.setProperty("DATABASE_USERNAME", dotenv.get("DATABASE_USERNAME"));
+//		System.setProperty("DATABASE_PASSWORD", dotenv.get("DATABASE_PASSWORD"));
+//		System.setProperty("google.api.key", dotenv.get("google.api.key"));
+//		System.setProperty("virustotal.api.key", dotenv.get("virustotal.api.key"));
+//		System.setProperty("phishtank.api.url", dotenv.get("phishtank.api.url"));
+//		System.setProperty("MAIL_HOST", dotenv.get("MAIL_HOST"));
+//		System.setProperty("MAIL_PORT", dotenv.get("MAIL_PORT"));
+//		System.setProperty("MAIL_USERNAME", dotenv.get("MAIL_USERNAME"));
+//		System.setProperty("MAIL_PASSWORD", dotenv.get("MAIL_PASSWORD"));
 
 //		System.setProperty("DATABASE_URL", System.getenv("DATABASE_URL"));
+		System.setProperty("SECRET_STRING", System.getenv("SECRET_STRING"));
+		System.setProperty("DATABASE_URL", System.getenv("DATABASE_URL"));
+		System.setProperty("DATABASE_USERNAME", System.getenv("DATABASE_USERNAME"));
+		System.setProperty("DATABASE_PASSWORD", System.getenv("DATABASE_PASSWORD"));
+		System.setProperty("google.api.key", System.getenv("google.api.key"));
+		System.setProperty("virustotal.api.key", System.getenv("virustotal.api.key"));
+		System.setProperty("phishtank.api.url", System.getenv("phishtank.api.url"));
+		System.setProperty("MAIL_HOST", System.getenv("MAIL_HOST"));
+		System.setProperty("MAIL_PORT", System.getenv("MAIL_PORT"));
+		System.setProperty("MAIL_USERNAME", System.getenv("MAIL_USERNAME"));
+		System.setProperty("MAIL_PASSWORD", System.getenv("MAIL_PASSWORD"));
 		SpringApplication.run(CheckLinkBackendApplication.class, args);
 	}
 
