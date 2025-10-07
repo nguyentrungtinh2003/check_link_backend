@@ -8,6 +8,7 @@ import com.TrungTinhBackend.check_link_backend.service.history.HistoryService;
 import com.TrungTinhBackend.check_link_backend.service.phishtank.PhishTankService;
 import com.TrungTinhBackend.check_link_backend.service.virustotal.VirusTotalService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.core.util.Json;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -59,15 +60,24 @@ public class CheckUrlController {
             }
         }
 
-        // Lưu history (userId có thể null)
-        historyService.addHistory(
-                userId,
-                request.getRemoteAddr(),
-                request.getHeader("User-Agent"),
-                url,
-                googleResult,
-                vtResult
-        );
+        if (vtResult != null) {
+            Object statusObj = vtResult.get("status");
+            String status = statusObj != null ? statusObj.toString() : "";
+
+            if (!"queued".equalsIgnoreCase(status)) {
+                // Chỉ lưu nếu không phải "queued"
+                historyService.addHistory(
+                        userId,
+                        request.getRemoteAddr(),
+                        request.getHeader("User-Agent"),
+                        url,
+                        googleResult,
+                        vtResult
+                );
+            } else {
+                System.out.println("⏳ VirusTotal đang xử lý, chưa lưu history.");
+            }
+        }
 
         APIResponse apiResponse = new APIResponse();
         apiResponse.setStatusCode(200L);

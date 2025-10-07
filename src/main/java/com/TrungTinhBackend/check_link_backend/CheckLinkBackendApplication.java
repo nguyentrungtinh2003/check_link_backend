@@ -12,9 +12,9 @@ public class CheckLinkBackendApplication {
 	public static void main(String[] args) {
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 
-//		Dotenv dotenv = Dotenv.load();
+		//Dotenv dotenv = Dotenv.load();
 
-		// Đọc các biến từ file .env và thiết lập chúng vào hệ thống
+		 //Đọc các biến từ file .env và thiết lập chúng vào hệ thống
 //		System.setProperty("SECRET_STRING", dotenv.get("SECRET_STRING"));
 //		System.setProperty("DATABASE_URL", dotenv.get("DATABASE_URL"));
 //		System.setProperty("DATABASE_USERNAME", dotenv.get("DATABASE_USERNAME"));
