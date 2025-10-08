@@ -39,6 +39,7 @@ public class CheckLinkBackendApplication {
 		System.setProperty("MAIL_PORT", System.getenv("MAIL_PORT"));
 		System.setProperty("MAIL_USERNAME", System.getenv("MAIL_USERNAME"));
 		System.setProperty("MAIL_PASSWORD", System.getenv("MAIL_PASSWORD"));
+		System.setProperty("mailersend.api.key", System.getenv("mailersend.api.key"));
 		SpringApplication.run(CheckLinkBackendApplication.class, args);
 	}
 

@@ -2,32 +2,58 @@ package com.TrungTinhBackend.check_link_backend.service.email;
 
 import com.TrungTinhBackend.check_link_backend.dto.APIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class MailService {
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+    @Value("${mailersend.api.key}")
+    private String apiKey;
 
-    public APIResponse sendEmail(String to, String subject, String body) {
-        APIResponse apiResponse = new APIResponse();
+    public void sendEmail(String toEmail, String subject, String text) {
+        String url = "https://api.mailersend.com/v1/email";
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-        javaMailSender.send(message);
+        Map<String, Object> from = Map.of(
+                "email", "test-3m5jgrok2xdgdpyo.mlsender.net",  // bạn có thể dùng địa chỉ sandbox này
+                "name", "Url-Checker"
+        );
 
-        apiResponse.setStatusCode(200L);
-        apiResponse.setMessage("Sending mail success !");
-        apiResponse.setData(message);
-        apiResponse.setTimestamp(LocalDateTime.now());
+        Map<String, Object> to = Map.of(
+                "email", toEmail,
+                "name", "Receiver"
+        );
 
-        return apiResponse;
+        Map<String, Object> data = new HashMap<>();
+        data.put("from", from);
+        data.put("to", List.of(to));
+        data.put("subject", subject);
+        data.put("text", text);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(data, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            System.out.println("Response: " + response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
