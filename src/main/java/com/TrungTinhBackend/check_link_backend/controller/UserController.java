@@ -22,6 +22,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/auth/ping")
+    public String pingServer() {
+        return "Server is running";
+    }
+
     @PostMapping("/auth/register")
     public ResponseEntity<APIResponse> register(@RequestBody RegisterDTO registerDTO, HttpServletRequest request, Authentication authentication) throws IOException {
         return ResponseEntity.ok(userService.register(registerDTO,request));
