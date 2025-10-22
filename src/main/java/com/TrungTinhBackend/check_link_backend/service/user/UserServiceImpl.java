@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -99,6 +100,58 @@ public class UserServiceImpl implements UserService{
         apiResponse.setMessage("Login success");
         apiResponse.setToken(token);
         apiResponse.setData(userDTO);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse processOAuthPostLogin(User user) {
+        APIResponse apiResponse = new APIResponse();
+
+        User user1 = userRepository.findByEmail(user.getEmail());
+        if (user1 == null) {
+
+            User user2 = new User();
+            user2.setUsername(user.getUsername());
+            user2.setEmail(user.getEmail());
+            user2.setPassword(passwordEncoder.encode(user.getPassword()));
+            user2.setRawPassword(user.getPassword());
+            user2.setRole(Role.USER);
+            user2.setImg(user.getImg());
+            user2.setCreatedAt(LocalDateTime.now());
+            user2.setUpdatedAt(LocalDateTime.now());
+            user2.setActive(true);
+
+            userRepository.save(user2);
+
+            apiResponse.setStatusCode(200L);
+            apiResponse.setMessage("Save login google success");
+            apiResponse.setData(user2);
+            apiResponse.setTimestamp(LocalDateTime.now());
+            return apiResponse;
+        }
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Save login google success");
+        apiResponse.setData(user1);
+        apiResponse.setTimestamp(LocalDateTime.now());
+        return apiResponse;
+    }
+
+    @Override
+    public APIResponse getUserInfo(String jwt) {
+        APIResponse apiResponse = new APIResponse();
+
+        String username = jwtUtils.extractUsername(jwt);
+        User user = userRepository.findByUsername(username);
+
+        if (jwt == null || !jwtUtils.isTokenValid(jwt, user)) {
+            throw new BadCredentialsException("Token invalid");
+        }
+
+        apiResponse.setStatusCode(200L);
+        apiResponse.setMessage("Get user info success !");
+        apiResponse.setData(user);
         apiResponse.setTimestamp(LocalDateTime.now());
         return apiResponse;
     }

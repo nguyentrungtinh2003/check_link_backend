@@ -23,7 +23,7 @@ public class User implements UserDetails {
     private String password;
     private String rawPassword;
     private Role role;
-
+    private String img;
     private String otp;
     private LocalDateTime otpExpiry;
 
@@ -39,13 +39,14 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(Long id, String username, String email, String password, String rawPassword, Role role, String otp, LocalDateTime otpExpiry, LocalDateTime createdAt, LocalDateTime updatedAt, List<History> histories, boolean active) {
+    public User(Long id, String username, String email, String password, String rawPassword, Role role, String img, String otp, LocalDateTime otpExpiry, LocalDateTime createdAt, LocalDateTime updatedAt, List<History> histories, boolean active) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.rawPassword = rawPassword;
         this.role = role;
+        this.img = img;
         this.otp = otp;
         this.otpExpiry = otpExpiry;
         this.createdAt = createdAt;
@@ -96,6 +97,14 @@ public class User implements UserDetails {
 
     public Long getId() {
         return id;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 
     public void setId(Long id) {

@@ -16,8 +16,8 @@ public class CorsConfig {
                 System.out.println("CORS Config Loaded");
                 registry.addMapping("/**")
                         .allowedOrigins(
-                                "http://localhost:3000",
-                                "http://localhost:5173",
+//                                "http://localhost:3000",
+//                                "http://localhost:5173",
                                 "https://url-checker-dev.vercel.app/"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")

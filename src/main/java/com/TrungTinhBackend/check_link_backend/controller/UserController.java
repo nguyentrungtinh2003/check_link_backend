@@ -37,6 +37,11 @@ public class UserController {
         return ResponseEntity.ok(userService.login(loginDTO,response,request,authentication));
     }
 
+    @GetMapping("/auth/user-info")
+    public ResponseEntity<APIResponse> getUserInfo(@RequestParam String jwt) throws Exception {
+        return ResponseEntity.ok(userService.getUserInfo(jwt));
+    }
+
     @PostMapping("/auth/send-otp")
     public ResponseEntity<APIResponse> sendOTP(@RequestParam String email) {
         return ResponseEntity.ok(userService.sendOTP(email));
