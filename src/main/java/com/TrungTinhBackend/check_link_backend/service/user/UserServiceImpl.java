@@ -10,6 +10,8 @@ import com.TrungTinhBackend.check_link_backend.service.jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -139,6 +141,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Cacheable(value = "user", key = "#id")
     public APIResponse getUserInfo(String jwt) {
         APIResponse apiResponse = new APIResponse();
 
@@ -157,6 +160,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @CacheEvict(value = {"userPage","user"},allEntries = true)
     public APIResponse updateUser(Long id, User user, Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
@@ -311,6 +315,7 @@ if(!authUser.getId().equals(id) && !authUser.getRole().equals(Role.ADMIN)) {
     }
 
     @Override
+    @CacheEvict(value = {"userPage","user"},allEntries = true)
     public APIResponse toggleDelete(Long id, Authentication authentication) throws AccessDeniedException {
         APIResponse apiResponse = new APIResponse();
 
@@ -335,6 +340,7 @@ if(!authUser.getId().equals(id) && !authUser.getRole().equals(Role.ADMIN)) {
     }
 
     @Override
+    @Cacheable(value = {"userPage"})
     public APIResponse getUserByPage(String keyword, int page, int size, Authentication authentication) {
         APIResponse apiResponse = new APIResponse();
 
