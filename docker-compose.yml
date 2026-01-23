@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: url-checker-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: url_checker
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    image: nguyentrungtinh/url-checker-backend:${IMAGE_TAG}
+    container_name: url-checker-backend
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:

@@ -81,7 +81,7 @@ public class SecurityConfig {
                 .successHandler((request, response, authentication) -> {
                     OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
 
-                    Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
+                    Map<String,Object> attributes = oauthToken.getPrincipal().getAttributes();
                     String email = (String) attributes.get("email");
                     String name = (String) attributes.get("name");
                     String picture = (String) attributes.get("picture");
