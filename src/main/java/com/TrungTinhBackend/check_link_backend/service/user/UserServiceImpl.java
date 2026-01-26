@@ -241,7 +241,7 @@ if(!authUser.getId().equals(id) && !authUser.getRole().equals(Role.ADMIN)) {
         user.setOtpExpiry(LocalDateTime.now().plusMinutes(3));
         userRepository.save(user);
 
-        mailService.sendMail(email,"Mã OTP của URL Checker","OTP : "+otp);
+//        mailService.sendMail(email,"Mã OTP của URL Checker","OTP : "+otp);
 
         apiResponse.setStatusCode(200L);
         apiResponse.setMessage("Send OTP success");

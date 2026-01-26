@@ -5,7 +5,6 @@ import com.TrungTinhBackend.check_link_backend.entity.User;
 import com.TrungTinhBackend.check_link_backend.repository.UserRepository;
 import com.TrungTinhBackend.check_link_backend.service.googlesafebrowsing.GoogleSafeBrowsingService;
 import com.TrungTinhBackend.check_link_backend.service.history.HistoryService;
-import com.TrungTinhBackend.check_link_backend.service.kafka.UrlProducer;
 import com.TrungTinhBackend.check_link_backend.service.phishtank.PhishTankService;
 import com.TrungTinhBackend.check_link_backend.service.virustotal.VirusTotalService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,9 +38,6 @@ public class CheckUrlController {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private UrlProducer urlProducer;
 
     @GetMapping
     public APIResponse checkAll(
@@ -82,8 +78,6 @@ public class CheckUrlController {
                 System.out.println("⏳ VirusTotal đang xử lý, chưa lưu history.");
             }
         }
-
-        urlProducer.sendUrl(url);
 
         APIResponse apiResponse = new APIResponse();
         apiResponse.setStatusCode(200L);
